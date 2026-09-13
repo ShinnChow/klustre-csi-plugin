@@ -26,50 +26,8 @@ linker environment.
 ### Workaround
 
 - Rely on `mount.lustre` and `nsenter`-based mount operations (already the default).
-- Disable or ignore `lfs`-based health probe output until the probe mechanism is
-  reworked.
-- Monitor the linked GitHub issue below for status on a permanent fix.
+- Disable or ignore `lfs`-based health probe output until the probe mechanism is reworked.
 
-### Reference
+### Status
 
-<!-- MANUAL ACTION REQUIRED: File a GitHub issue at
-     https://github.com/klustrefs/klustre-csi-plugin/issues/new
-     using the template below, then replace this comment with a link to the
-     resulting issue. -->
-
-**Issue template** (paste when filing manually):
-
-```
-Title: Node plugin: lfs-based probes silently fail due to musl/glibc mismatch
-
-Labels: bug, csi-node, follow-up
-
-## Summary
-The node plugin container (musl-linked) attempts to exec host glibc binaries via
-LD_LIBRARY_PATH, which fails with a relocation error. lfs-based health probes
-silently report failure even on nodes with a working Lustre client.
-
-## Reproduction
-Observed on a 3-VM KVM rig: Lustre 2.17.0 (ldiskfs), k3s node, klustre-csi-plugin
-DaemonSet running. Mount operations succeed (nsenter path), but `lfs --version`
-returns a glibc relocation error from inside the musl container.
-
-Relevant manifest: `manifests/daemonset-klustre-csi-node.yaml` lines 41-44
-(PATH and LD_LIBRARY_PATH envs pointing to `/host/*` paths).
-
-## Impact
-Non-blocking for mount operations. Health probes may report false negatives.
-
-## Workaround
-Use nsenter-based mounts (default). Ignore lfs-probe output.
-
-## Acceptance criteria for fix
-- `lfs` binary (or equivalent probe) works correctly from inside the musl
-  container, OR
-- Health probe mechanism is replaced with one that does not require exec'ing
-  host binaries via `LD_LIBRARY_PATH`.
-
-## See also
-`klustrefs-plan.md` section 1: "nsenter runs fully host-side, but lfs-based health probes
-silently fail. Tracked as a follow-up issue."
-```
+Known limitation. Fix will land in a future release — either by using a statically-linked probe or by replacing the probe mechanism with one that does not require exec'ing host glibc binaries via `LD_LIBRARY_PATH`. Non-blocking for mount operations.
