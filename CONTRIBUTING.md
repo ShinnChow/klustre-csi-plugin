@@ -12,6 +12,7 @@ We welcome pull requests and issue reports. To keep releases predictable:
 ### Tagging & Releases
 
 - Only tags prefixed with `v` (for example `v0.1.0`) are accepted by the automation.
+- The tag must match the `version` in `Cargo.toml` and the image `newTag` in `manifests/kustomization.yaml` — `make tag` verifies both before creating the tag.
 - Use the Makefile helpers to keep releases consistent:
   - `make tag VERSION=vX.Y.Z` — create an annotated SemVer tag on the current HEAD.
   - `make tag-push VERSION=vX.Y.Z` — push an existing tag to the `origin` remote.

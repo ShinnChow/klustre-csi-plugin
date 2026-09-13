@@ -26,6 +26,8 @@ PersistentVolumeClaim are created or deleted.
 - Dynamic provisioning workflows (`CreateVolume`, `DeleteVolume`, `ControllerPublish` / `Unpublish`).
 - Snapshots, expansion, and metrics (`CreateSnapshot`, `NodeExpandVolume`, `NodeGetVolumeStats`, etc.).
 
+> **Roadmap:** Future releases will introduce CRD-based configuration under the `csi.klustrefs.io/v1alpha1` API group.
+
 ## Prerequisites
 
 ### Kubernetes Cluster
@@ -40,7 +42,20 @@ PersistentVolumeClaim are created or deleted.
 
 ## Quick Start
 
-Use the Kubernetes manifests provided in `manifests/` or Helm chart from the `klustrefs/helm-charts` repository if you prefer Helm.
+### Helm (recommended)
+
+Install with the published Helm chart from the [`klustrefs/charts`](https://github.com/klustrefs/charts) repository:
+
+```bash
+helm upgrade --install klustre-csi \
+  oci://ghcr.io/klustrefs/charts/klustre-csi-plugin \
+  --version 0.1.1 \
+  --namespace klustre-system \
+  --create-namespace \
+  --set imagePullSecrets[0].name=ghcr-secret
+```
+
+### Raw manifests
 
 ```bash
 kubectl apply -f manifests/
@@ -51,6 +66,8 @@ Validate the rollout:
 ```bash
 kubectl get pods -n klustre-system
 ```
+
+The upcoming `klustrefs-operator` will automate CSI deployment. See the [klustrefs-operator repository](https://github.com/klustrefs/klustrefs-operator) when available.
 
 ### Mount an Existing Lustre Share
 
