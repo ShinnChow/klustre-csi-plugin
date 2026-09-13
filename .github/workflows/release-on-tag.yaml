@@ -61,6 +61,22 @@ jobs:
             exit 1
           fi
 
+      - name: Ensure Cargo.toml version matches release tag
+        run: |
+          EXPECTED_VERSION='${{ steps.semver.outputs.version }}'
+          CARGO_VERSION=$(grep -m1 '^version = ' Cargo.toml | awk -F'"' '{print $2}')
+
+          if [ -z "${CARGO_VERSION}" ]; then
+            echo "Could not determine version from Cargo.toml" >&2
+            exit 1
+          fi
+
+          if [ "${CARGO_VERSION}" != "${EXPECTED_VERSION}" ]; then
+            echo "Version in Cargo.toml (${CARGO_VERSION}) does not match release tag version (${EXPECTED_VERSION})." >&2
+            echo "Update Cargo.toml [package].version before tagging a release." >&2
+            exit 1
+          fi
+
       - name: Generate release notes
         id: cliff
         uses: orhun/git-cliff-action@v4
