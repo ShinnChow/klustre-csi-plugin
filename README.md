@@ -28,6 +28,10 @@ PersistentVolumeClaim are created or deleted.
 
 > **Roadmap:** Future releases will introduce CRD-based configuration under the `csi.klustrefs.io/v1alpha1` API group.
 
+## Troubleshooting
+
+See [docs/troubleshooting.md](docs/troubleshooting.md) for known issues and workarounds.
+
 ## Prerequisites
 
 ### Kubernetes Cluster
