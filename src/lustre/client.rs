@@ -7,6 +7,14 @@ use tracing::{debug, info, warn};
 #[derive(Debug, Clone)]
 pub struct LustreClient;
 
+/// Run a host binary via nsenter: this container is musl-linked, so exec'ing
+/// host glibc binaries in-container fails with a dynamic-linker ABI mismatch.
+fn host_command(program: &str) -> Command {
+    let mut cmd = Command::new("nsenter");
+    cmd.arg("-t").arg("1").arg("-m").arg(program);
+    cmd
+}
+
 impl LustreClient {
     pub fn new() -> Self {
         Self
@@ -16,7 +24,7 @@ impl LustreClient {
     pub fn is_lustre_available(&self) -> Result<bool> {
         debug!("Checking if Lustre kernel module is loaded");
 
-        let output = Command::new("lsmod")
+        let output = host_command("lsmod")
             .output()
             .context("Failed to execute lsmod")?;
 
@@ -40,7 +48,7 @@ impl LustreClient {
 
         info!("Attempting to load Lustre kernel module");
 
-        let output = Command::new("modprobe")
+        let output = host_command("modprobe")
             .arg("lustre")
             .output()
             .context("Failed to execute modprobe")?;
@@ -58,7 +66,7 @@ impl LustreClient {
     pub fn get_fs_info(&self, mount_point: &str) -> Result<LustreFilesystemInfo> {
         debug!("Getting filesystem info for: {}", mount_point);
 
-        let output = Command::new("lfs")
+        let output = host_command("lfs")
             .args(["df", "-h", mount_point])
             .output()
             .context("Failed to execute lfs df")?;
@@ -138,7 +146,7 @@ impl LustreClient {
     pub fn get_lustre_version(&self) -> Result<String> {
         debug!("Getting Lustre version");
 
-        let output = Command::new("lfs")
+        let output = host_command("lfs")
             .arg("--version")
             .output()
             .context("Failed to get Lustre version")?;

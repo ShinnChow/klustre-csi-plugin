@@ -38,11 +38,7 @@ spec:
             configMapKeyRef:
               name: klustre-csi-settings
               key: logLevel
-        - name: PATH
-          value: /host/usr/sbin:/host/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-        - name: LD_LIBRARY_PATH
-          value: /host/lib:/host/lib64:/host/usr/lib:/host/usr/lib64
-        image: ghcr.io/klustrefs/klustre-csi-plugin:v0.1.1
+        image: ghcr.io/klustrefs/klustre-csi-plugin:v0.1.3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
@@ -75,18 +71,6 @@ spec:
           name: pods-mount-dir
         - mountPath: /dev
           name: device-dir
-        - mountPath: /host/sbin
-          name: host-sbin
-          readOnly: true
-        - mountPath: /host/usr/sbin
-          name: host-usr-sbin
-          readOnly: true
-        - mountPath: /host/lib
-          name: host-lib
-          readOnly: true
-        - mountPath: /host/lib64
-          name: host-lib64
-          readOnly: true
       - args:
         - --v=2
         - --csi-address=/csi/csi.sock
@@ -135,17 +119,3 @@ spec:
           path: /dev
           type: Directory
         name: device-dir
-      - hostPath:
-          path: /sbin
-          type: Directory
-        name: host-sbin
-      - hostPath:
-          path: /usr/sbin
-          type: Directory
-        name: host-usr-sbin
-      - hostPath:
-          path: /lib
-        name: host-lib
-      - hostPath:
-          path: /lib64
-        name: host-lib64
